@@ -1,9 +1,44 @@
-# App_DHCP_DNS_Supervisor
+# SAE501 - SAE502
 
-<br>
+### Membres
 
-**Application in Python with Api to supervisate DHCP and DNS on your LAN network !**
+- Léo BRUALLA
+    - Interface Graphique
+    - Analyse DHCP
+- Justin RALITE
+    - Sonde DNS
+    - Sonde DHCP
+- Joey GALIGANI
+    - Analyse DNS
+    - Modularité
+- Elouan FIORE
+    - API
+    - Base de donnée
 
-<br>
+### Documentations
+- [Utilisateur](docs/Interface-Utilisateur.md)
+- [Tests](docs/tests.md)
+- [Developpeur/Installation](docs/dev_install.md)
+- API (http://\<serveur_api\>:8000/docs)
 
-I took care of the DNS part by processing the frames sending requests according to different parameters such as the domain name, the request error code etc...
+### Fonctionnalités  non implémentés
+
+#### Serveurs DHCP autorisés
+- Présent sur l'API
+- Présent sur le moteur d'analyse DHCP
+- Absent de l'interface graphique
+
+#### Serveurs DNS autorisés
+- Présent sur le moteur d'analyse DNS
+- Absent sur l'API
+- Absent de l'interface graphique
+
+#### Domaines DNS dangereux
+- Présent sur le moteur d'analyse DNS
+- Absent sur l'API
+- Absent de l'interface graphique
+
+#### Statisques DNS
+- Présent sur le moteur d'analyse DNS
+- Présent sur l'API
+- Absent de l'interface graphique

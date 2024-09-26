@@ -1,0 +1,105 @@
+body {
+    background-color: #fefeed;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 10%;
+    background-color: #008080;
+    padding-top: 20px;
+}
+
+#menu a {
+    display: flex;
+    padding: 10px;
+    text-decoration: none;
+    color: #000;
+    justify-content: center;
+}
+
+#menu a:hover {
+    background-color: #fefeed;
+    border-radius: 15%;
+}
+
+#content {
+    width: 88%;
+    margin-left: 11%;
+}
+
+#filterButton {
+    border-radius: 30%; /* Modification de la valeur pour un cercle */
+    margin-bottom: 1%;
+    background-color: #fff;
+}
+
+#filterMenu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#filterMenu.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.logo {
+    border-radius: 50%;
+    max-width: 90%;
+    margin-bottom: 10%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+
+
+
+thead th {
+    background-color: #f2f2f2; 
+}
+
+tbody tr:nth-child(even) {
+    background-color: #ffffff; /* Couleur de fond pour les lignes paires */
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Couleur de fond pour les lignes impaires */
+}
+
+td, th {
+    padding: 8px;
+    border: 1px solid #dddddd;
+    text-align: left;
+}
+
+#pagination button {
+    margin-top: 1%;
+    margin-right: 0.5%;
+    margin-left: 0.5%;
+    background-color: #008080;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 50%; /* Modification de la valeur pour un cercle */
+}
+
+#pagination button:hover {
+    background-color: #006666;
+}

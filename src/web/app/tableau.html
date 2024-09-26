@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewNet</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style/tableau.css">
+</head>
+<body>
+    <div id="menu">
+        <img align="middle" src="media/ViewNet.jpg" class="logo">
+        <a href="index.html">Accueil</a>
+        <a href="tableau.html">DHCP</a>
+        <a href="tableau-dns.html">DNS</a>
+    </div>
+    <div id="content">
+        <h2>Tableau JSON</h2>
+
+        <!-- Bouton pour ouvrir le menu de filtre -->
+        <button id="filterButton">Filtrer</button>
+
+        <!-- Menu de filtre (initialement caché) -->
+        <div id="filterMenu" style="display: none;">
+            <!-- Ajoutez vos options de filtre ici -->
+            <label for="filterMacSrc">MacSrc:</label>
+            <input type="text" id="filterMacSrc">
+            <br>
+            <label for="filterMacDst">MacDst:</label>
+            <input type="text" id="filterMacDst">
+            <br>
+            <label for="filterXID">XID:</label>
+            <input type="text" id="filterXID">
+            <br>
+            <label for="filterIpSrc">IPSrc:</label>
+            <input type="text" id="filterIpSrc">
+            <br>
+            <label for="filterIpDst">IPDst:</label>
+            <input type="text" id="filterIpDst">
+            <br>
+            <label for="filterMType">Message Type:</label>
+            <input type="text" id="filterMType">
+            <br>
+
+            <!-- Bouton pour appliquer le filtre -->
+            <button id="applyFilter">Appliquer le filtre</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="sortable" data-sort="macsrc">MacSrc</th>
+                    <th class="sortable" data-sort="macdst">MacDst</th>
+                    <th class="sortable" data-sort="XID">XID</th>
+                    <th class="sortable" data-sort="ipsrc">IPSrc</th>
+                    <th class="sortable" data-sort="ipdst">IPDst</th>
+                    <th class="sortable" data-sort="mtype">Message Type</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div id="pagination"></div>
+    </div>
+
+    <script>
+        const url = "http://127.0.0.1:8000/entry/dhcp";
+        let originalData = [];  // Stocke les données d'origine
+        let jsonData = [];
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur de requête. Code HTTP : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                originalData = data;
+                jsonData = data;
+                displayPage(1);
+                createPaginationButtons();
+            })
+            .catch(error => {
+                console.error(`Erreur lors de la requête : ${error.message}`);
+            });
+
+        function JSONcreateTable(element) {
+            var tableBody = document.getElementById("tableBody");
+            var row = tableBody.insertRow(0);
+            row.insertCell(0).innerHTML = element.macsrc;
+            row.insertCell(1).innerHTML = element.macdst;
+            row.insertCell(2).innerHTML = element.dhcp.xid;
+            row.insertCell(3).innerHTML = element.ipsrc;
+            row.insertCell(4).innerHTML = element.ipdst;
+            row.insertCell(5).innerHTML = element.dhcp.options['message-type'];
+        }
+
+        const pageSize = 15;
+
+        function displayPage(pageNumber) {
+            const startIndex = (pageNumber - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = jsonData.slice(startIndex, endIndex);
+
+            $("#tableBody").empty();
+
+            pageData.forEach(element => JSONcreateTable(element));
+        }
+
+        function createPaginationButtons() {
+            const totalPages = Math.ceil(jsonData.length / pageSize);
+            const paginationDiv = $("#pagination");
+
+            for (let i = 1; i <= totalPages; i++) {
+                $("<button>")
+                    .text(i)
+                    .on("click", function() {
+                        displayPage(i);
+                    })
+                    .appendTo(paginationDiv);
+            }
+        }
+
+        // Affiche ou masque le menu de filtre lors du clic sur le bouton "Filtrer"
+        $("#filterButton").on("click", function() {
+            $("#filterMenu").toggle();
+        });
+
+        // Applique le filtre lors du clic sur le bouton "Appliquer le filtre"
+        $("#applyFilter").on("click", function() {
+            filterData();
+        });
+
+        // Fonction pour filtrer les données en fonction des valeurs des champs de filtre
+        function filterData() {
+            // Récupère les valeurs des champs de filtre
+            const filterXID = $("#filterXID").val().toLowerCase();
+            const filterMacSrc = $("#filterMacSrc").val().toLowerCase();
+            const filterMacDst = $("#filterMacDst").val().toLowerCase();
+            const filterIpSrc = $("#filterIpSrc").val().toLowerCase();
+            const filterIpDst = $("#filterIpDst").val().toLowerCase();
+            const filterMType = $("#filterMType").val().toLowerCase();
+
+            // Filtre les données en fonction des valeurs des champs
+            jsonData = originalData.filter(element => {
+                return (!filterXID || element.dhcp.xid.toLowerCase().includes(filterXID)) &&
+                       (!filterMacSrc || element.macsrc.toLowerCase().includes(filterMacSrc)) &&
+                       (!filterMacDst || element.macdst.toLowerCase().includes(filterMacDst)) &&
+                       (!filterIpSrc || element.ipsrc.toLowerCase().includes(filterIpSrc)) &&
+                       (!filterIpDst || element.ipdst.toLowerCase().includes(filterIpDst)) &&
+                       (!filterMType || element.dhcp.options['message-type'] == filterMType);
+                // Ajoutez d'autres conditions de filtre selon vos besoins
+            });
+
+            // Affiche la première page des données filtrées
+            displayPage(1);
+
+            // Ne masque pas le menu de filtre après avoir appliqué le filtre
+             $("#filterMenu").hide();
+        }
+    </script>
+</body>
+</html>

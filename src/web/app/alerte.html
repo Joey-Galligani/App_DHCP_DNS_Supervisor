@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewNet</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style/alerte.css">
+</head>
+<body>
+    <div id="menu">
+        <img align="middle" src="media/ViewNet.jpg" class="logo"></img>
+        <a href="index.html">Accueil</a>
+        <a href="tableau.html">DHCP</a>
+        <a href="tableau-dns.html">DNS</a>
+    </div>
+    <div id="content">
+        <h1>Gestionnaire d'alerte :</h1>
+        <div id="macsrc"></div>
+        <div id="ipsrc"></div> 
+        <div id="ipdst"></div> 
+        <div id="alert"></div> 
+        <div id="button-container">
+            <button onclick="back()" style="background-color: red;">Non approuvé</button>
+            <button onclick="delalert()" style="background-color: green;">Approuvé</button>
+        </div>
+    </div>
+    <script>
+    const str=window.location
+    var url1 = new URL(str);
+    var search_params = new URLSearchParams(url1.search);
+    if(search_params.has('id')) {
+        var id = search_params.get('id');
+    }
+    else{
+        document.location.href="index.html"
+    }
+    const url = "http://127.0.0.1:8000/entry/dhcp";
+    let originalData = [];  // Stocke les données d'origine
+    let jsonData = [];
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur de requête. Code HTTP : ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            jsonData = data;
+            jsonData.forEach(entry => {
+                if(entry.ID==id){
+                    document.getElementById('macsrc').innerText = "La trame malveillante provient de la mac : "+entry.macsrc;
+                    document.getElementById('ipsrc').innerText = "Avec l'adresse : "+entry.ipsrc;
+                    document.getElementById('ipdst').innerText = "Elle était destinée à l'adresse : "+ entry.ipdst;
+                }
+                else{
+                    if(document.getElementById('macsrc').innerText ==""){
+                    document.getElementById('alert').innerText = "La trame n'a pas été retrouvée dans la BDD, veuillez approfondir la recherche";
+                }}
+            });
+        })
+        .catch(error => {
+            console.error(`Erreur lors de la requête : ${error.message}`);
+        });
+
+        function back() {
+            window.location.href = "index.html";
+        }
+
+
+        function delalert() {
+            const str = window.location;
+            var url1 = new URL(str);
+            var search_params = new URLSearchParams(url1.search);
+            if (search_params.has('id')) {
+                var id = search_params.get('id');
+            } else {
+                document.location.href = "index.html";
+            }
+            const url = "http://127.0.0.1:8000/alerts/dhcp";
+            let jsonData = [];
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur de requête. Code HTTP : ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    jsonData = data;
+                    const entryToDelete = jsonData.find(entry => entry.ID === id);
+                    if (!entryToDelete) {
+                        throw new Error("Aucune entrée avec cet ID n'a été trouvée.");
+                    }
+
+                    const deleteUrl = `http://127.0.0.1:8000/alerts/dhcp/${entryToDelete.ID}`;
+                    return fetch(deleteUrl, {
+                        method: 'DELETE',
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur de requête lors de la suppression. Code HTTP : ${response.status}`);
+                    }
+                    console.log("Entrée supprimée avec succès.");
+                    window.location.href = "index.html";
+                })
+                .catch(error => {
+                    console.error(`Erreur lors de la suppression : ${error.message}`);
+                });
+        }
+
+    </script>
+</body>
+</html>

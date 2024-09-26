@@ -1,0 +1,87 @@
+body {
+    background-color: #fefeed;
+    margin: 0;
+    font-family: monospace;
+}
+
+#menu {
+display: flex;
+flex-direction: column;
+align-items: center;
+position: fixed;
+left: 0;
+top: 0;
+height: 100%;
+width: 10%;
+background-color: #008080;
+padding-top: 20px;
+}
+
+#menu a {
+display: flex;
+padding: 10px;
+text-decoration: none;
+color: #000;
+justify-content: center;
+}
+
+#menu a:hover {
+    background-color: #fefeed;
+    border-radius: 15%;
+}
+
+.logo {
+    border-radius: 50%;
+    max-width: 90%;
+    margin-bottom: 10%;
+}
+
+
+#content {
+    width: 88%;
+    margin-left: 11%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+#content h1 {
+    font-family: monospace;
+    text-align : center;
+    font-size : 40px;
+}
+#macsrc, #ipsrc, #ipdst {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#alert {
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+    margin-top: 50px;
+    text-decoration: underline;
+}
+#button-container {
+    position: fixed;
+    bottom: 5%;
+    left: 55%;
+    transform: translateX(-50%);
+}
+
+button {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    opacity: 0.8;
+}

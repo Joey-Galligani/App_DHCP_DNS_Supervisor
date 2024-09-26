@@ -1,0 +1,43 @@
+services:
+
+  analyse-dhcp:
+    build: ./analyse-dhcp
+    environment:
+      - "API_SERV=http://192.168.1.91:8000"
+      - "TIMEOUT=300"
+
+  analyse-dns:
+    build: ./analyse-dns
+    environment:
+      - "API_SERV=http://192.168.1.91:8000"
+
+  web:
+    build: ./web
+    ports:
+      - 80:80
+      - 8000:8000
+    volumes:
+      - './web/app:/usr/share/nginx/html'
+
+  api:
+    build: ./api
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: example
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  # mongo-express:
+  #   image: mongo-express
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+  #     ME_CONFIG_BASICAUTH_USERNAME: admin
+  #     ME_CONFIG_BASICAUTH_PASSWORD: admin

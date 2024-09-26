@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewNet</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style/index.css">
+</head>
+<body>
+    <div id="menu">
+        <img align="middle" src="media/ViewNet.jpg" class="logo"></img>
+        <a href="index.html">Accueil</a>
+        <a href="tableau.html">DHCP</a>
+        <a href="tableau-dns.html">DNS</a>
+    </div>
+    <div id="content">
+        <h1>Bienvenue sur ViewNet</h1>
+        <div class="bar" id="bar">
+        <h2>Pourcentage d'adresses utilisées</h2>
+        <div class="progress-bar" id="ProgressBar"></div>
+        <div class="ProgressText" id="ProgressText"></div>
+        </div>
+        <div class="alert-container" id="alertContainer">
+        <h1>Alertes actives</h1>
+        </div>
+    </div>
+    <script>
+    let percentage = 0;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updateProgressBar();
+    });
+
+    function updateProgressBar() {
+        async function fetchData() {
+            const url = "http://127.0.0.1:8000/stats/dhcp";
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Erreur de requête. Code HTTP : ${response.status}`);
+                }
+
+                const data = await response.json();
+                var used = data.used;
+                var available = data.available;
+
+                // Calculer le pourcentage
+                percentage = (used * 100) / available;
+
+                const progressBar = document.getElementById("ProgressBar");
+
+                if (percentage <= 40) {
+                    progressBar.style.width = percentage + "%";
+                    progressBar.style.backgroundColor = "green";
+                } else if (percentage <= 60) {
+                    progressBar.style.width = percentage + "%";
+                    progressBar.style.backgroundColor = "yellow";
+                } else if (percentage <= 80) {
+                    progressBar.style.width = percentage + "%";
+                    progressBar.style.backgroundColor = "orange";
+                }else if (percentage >= 100) {
+                    progressBar.style.width = 100 + "%";
+                    progressBar.style.backgroundColor = "red";
+                }else {
+                    progressBar.style.width = percentage + "%";
+                    progressBar.style.backgroundColor = "red";
+                }
+                const progressText = document.getElementById("ProgressText");
+                progressText.innerHTML = `${used} utilisés / ${available} total`;
+
+                if (percentage < 100) {
+                    setTimeout(function() {
+                        percentage += 5;
+                        updateProgressBar();
+                    }, 1000); // Délai d'attente d'actualisation
+                }
+            } catch (error) {
+                console.error(`Erreur lors de la requête : ${error.message}`);
+            }
+        }
+
+        // Appeler la fonction fetchData
+        fetchData();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Mettre à jour la div avec les alertes  JSON
+        const alertContainer = document.getElementById("alertContainer");
+
+        // Fonction pour mettre à jour les alertes JSON
+        function updateAlerts() {
+            // Requête GET pour récupérer les alertes du serveur
+            fetch("http://127.0.0.1:8000/alerts/dhcp")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur de requête. Code HTTP : ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(jsonData => {
+                    // Supprimer les alertes existantes
+                    alertContainer.innerHTML = "";
+                    if (jsonData.length>0){
+                        alertContainer.innerHTML="<h2>Alertes actives : </h2>"
+                        // Ajouter les nouvelles alertes
+                        jsonData.forEach(alert => {
+                            const alertElement = document.createElement("a");
+                            alertElement.href = `alerte.html?id=${alert.frame}`;
+                            alertElement.classList.add("alert");
+
+                            // Ajouter le texte de l'alerte à la ligne
+                            const textElement = document.createElement("div");
+                            textElement.innerText = alert.type + " : "+alert.description;
+
+                            // Ajouter une image de loupe à droite de chaque alerte
+                            const imgElement = document.createElement("img");
+                            imgElement.src = "media/loupe.png";
+                            imgElement.alt = "Image";
+
+                            // Ajouter un lien autour de l'image
+                            alertElement.appendChild(textElement);
+                            alertElement.appendChild(imgElement);
+
+                            alertContainer.appendChild(alertElement);
+                    });
+                    } else{
+                        alertContainer.innerHTML="<h2>Pas d'alerte...</h2>"
+                    }
+                })
+                .catch(error => {
+                    console.error(`Erreur lors de la requête : ${error.message}`);
+                });
+        }
+
+        // Appeler la fonction pour mettre à jour les alertes au chargement de la page
+        updateAlerts();
+
+        setInterval(updateAlerts, 10000);  // Actualiser toutes les 10 secondes
+    });
+    </script>
+</body>
+</html>

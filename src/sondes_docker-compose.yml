@@ -1,0 +1,15 @@
+services:
+
+  sonde-dhcp:
+    build: ./sonde/dhcp
+    network_mode: "host"
+    environment:
+      - "API_SERV=http://192.168.1.91:8000"
+      - "INTERFACE=enp0s31f6"
+  
+  sonde-dns:
+    build: ./sonde/dns
+    network_mode: "host"
+    environment:
+      - "API_SERV=http://192.168.1.91:8000"
+      - "INTERFACE=enp0s31f6"
