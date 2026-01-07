@@ -1,20 +1,5 @@
 # SAE501 - SAE502
 
-### Membres
-
-- Léo BRUALLA
-    - Interface Graphique
-    - Analyse DHCP
-- Justin RALITE
-    - Sonde DNS
-    - Sonde DHCP
-- Joey GALIGANI
-    - Analyse DNS
-    - Modularité
-- Elouan FIORE
-    - API
-    - Base de donnée
-
 ### Documentations
 - [Utilisateur](docs/Interface-Utilisateur.md)
 - [Tests](docs/tests.md)
